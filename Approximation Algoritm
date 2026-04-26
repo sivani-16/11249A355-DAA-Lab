@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define V 5 // Number of vertices
+
+void approxVertexCover(int graph[V][V]) {
+    bool visited[V] = {false};
+    
+    // Iterate through all edges
+    for (int u = 0; u < V; u++) {
+        for (int v = 0; v < V; v++) {
+            // If edge exists and neither u nor v is in the vertex cover
+            if (graph[u][v] && !visited[u] && !visited[v]) {
+                // Add both endpoints to the vertex cover
+                visited[u] = true;
+                visited[v] = true;
+            }
+        }
+    }
+
+    // Print the vertices in the approximate vertex cover
+    printf("Approximate Vertex Cover: ");
+    for (int i = 0; i < V; i++) {
+        if (visited[i]) printf("%d ", i);
+    }
+    printf("\n");
+}
+
+int main() {
+    // Adjacency matrix for a sample undirected graph
+    int graph[V][V] = {
+        {0, 1, 1, 0, 0},
+        {1, 0, 1, 1, 0},
+        {1, 1, 0, 1, 0},
+        {0, 1, 1, 0, 1},
+        {0, 0, 0, 1, 0}
+    };
+
+    approxVertexCover(graph);
+    return 0;
+}
