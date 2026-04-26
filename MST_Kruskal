@@ -1,0 +1,103 @@
+include <stdio.h>
+ 
+#define MAX 5 // Number of vertices
+#define EDGES 6 // Number of edges
+ 
+// Structure to represent an edge
+typedef struct {
+	char src, dest;
+	int weight;
+} Edge;
+ 
+// Structure to represent the disjoint set
+typedef struct {
+	char parent;
+	int rank;
+} Subset;
+ 
+// Function prototypes
+int find(Subset subsets[], char i);
+void unionSet(Subset subsets[], char x, char y);
+void kruskal(Edge edges[]);
+ 
+// Main function
+int main() {
+	Edge edges[EDGES] = {
+    	{'A', 'B', 5},
+    	{'B', 'C', 3},
+    	{'C', 'E', 4},
+    	{'A', 'D', 1},
+    	{'D', 'C', 7},
+    	{'B', 'E', 8}
+	};
+ 
+	printf("Edges in the Minimum Spanning Tree:\n");
+	kruskal(edges);
+	
+	return 0;
+}
+ 
+// Function to find the parent of a vertex in the disjoint set
+int find(Subset subsets[], char i) {
+	if (subsets[i - 'A'].parent != i)
+    	subsets[i - 'A'].parent = find(subsets, subsets[i - 'A'].parent);
+	return subsets[i - 'A'].parent;
+}
+ 
+// Function to perform union of two sets
+void unionSet(Subset subsets[], char x, char y) {
+	int rootX = find(subsets, x);
+	int rootY = find(subsets, y);
+ 
+	if (rootX != rootY) {
+    	if (subsets[rootX - 'A'].rank > subsets[rootY - 'A'].rank)
+            subsets[rootY - 'A'].parent = rootX;
+    	else if (subsets[rootX - 'A'].rank < subsets[rootY - 'A'].rank)
+            subsets[rootX - 'A'].parent = rootY;
+    	else {
+            subsets[rootY - 'A'].parent = rootX;
+            subsets[rootX - 'A'].rank++;
+    	}
+	}
+}
+ 
+// Function to implement Kruskal's Algorithm
+void kruskal(Edge edges[]) {
+	Edge result[MAX - 1]; // Store the MST
+	int e = 0; // Count of edges in MST
+	int i = 0; // Index for sorted edges
+ 
+	// Sort edges by weight using simple bubble sort
+	for (int j = 0; j < EDGES - 1; j++) {
+   	 for (int k = 0; k < EDGES - j - 1; k++) {
+        	if (edges[k].weight > edges[k + 1].weight) {
+            	Edge temp = edges[k];
+                edges[k] = edges[k + 1];
+            	edges[k + 1] = temp;
+        	}
+    	}
+	}
+ 
+	// Initialize subsets (disjoint set)
+	Subset subsets[MAX];
+	for (int v = 0; v < MAX; v++) {
+        subsets[v].parent = 'A' + v;
+    	subsets[v].rank = 0;
+	}
+ 
+	// Process each edge and add to MST if it doesn't form a cycle
+	while (e < MAX - 1 && i < EDGES) {
+    	Edge nextEdge = edges[i++];
+    	int root1 = find(subsets, nextEdge.src);
+    	int root2 = find(subsets, nextEdge.dest);
+ 
+    	if (root1 != root2) { // If cycle is not formed
+        	result[e++] = nextEdge;
+            unionSet(subsets, root1, root2);
+    	}
+	}
+ 
+	// Print the result
+	for (i = 0; i < e; i++)
+    	printf("%c -- %d -- %c\n", result[i].src, result[i].weight, result[i].dest);
+}
