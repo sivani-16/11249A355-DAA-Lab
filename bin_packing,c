@@ -1,0 +1,36 @@
+#include<stdio.h>
+
+void binPacking(int *items, int binCapacity, int numItems) {
+    int binCount = 1;
+    int currentBinSpace = binCapacity;
+    
+    printf("Items: ");
+    for (int i = 0; i < numItems; i++) {
+        printf("%d ", items[i]);
+    }
+    printf("\\nBin Capacity: %d\\n", binCapacity);
+
+    for (int i = 0; i < numItems; i++) {
+        // If the item fits in the current bin, place it and update remaining space
+        if (currentBinSpace >= items[i]) {
+            currentBinSpace -= items[i];
+        } else {
+            // Otherwise, open a new bin and place the item in it
+            binCount++;
+            currentBinSpace = binCapacity - items[i];
+        }
+    }
+
+    printf("Number of bins required using Next Fit: %d\\n", binCount);
+}
+
+int main() {
+    // Example usage:
+    int items[] = {4, 8, 1, 4, 2, 1}; // Example item weights
+    int n = sizeof(items) / sizeof(items[0]); // Number of items
+    int capacity = 10; // Bin capacity
+
+    binPacking(items, capacity, n);
+
+    return 0;
+}
